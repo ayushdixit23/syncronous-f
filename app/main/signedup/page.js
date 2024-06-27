@@ -11,6 +11,7 @@ import { userData } from "@/lib/userSlice";
 import { decryptaes, encryptaes } from "@/app/security";
 import Cookies from "js-cookie";
 import { API } from "@/utils/Essentials";
+import { useAuthContext } from "@/utils/auth";
 // import firebase from "../../../firebase";
 
 function page() {
@@ -18,14 +19,12 @@ function page() {
   const { id, email, image, name, password } = useSelector(
     (state) => state.user
   );
-  const search = useSearchParams();
-  const dispatch = useDispatch();
-  // const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  //const [password, setPassword] = useState("");
-  const [org, setOrg] = useState("");
-  const [jobrole, setJobrole] = useState("");
-  const [data, setData] = useState([]);
+  const { setAuth } = useAuthContext()
+  const [members, setMembers] = useState(50)
+  const [location, setLocation] = useState("Kanpur")
+  const [type, setType] = useState("Public")
+  const [org, setOrg] = useState("Ayush's Organisation");
+  const [jobrole, setJobrole] = useState("Web Developer");
   const [join, setJoin] = useState(0);
 
   // Access the query parameters
@@ -80,13 +79,16 @@ function page() {
       const response = await axios.post(`${API}/signup`, {
         org,
         email,
-        username,
+        username: name,
         jobrole,
         password,
         image,
       });
       if (response.status === 200) {
-        router.push("../main/signin");
+        const value = await cookieSetter(response.data)
+        if (value) {
+          router.push("/side/todo")
+        }
       } else {
         console.log("User unable to signup");
       }
@@ -102,6 +104,26 @@ function page() {
       // Handle the error (e.g., display an error message to the user)
     }
   };
+
+  const cookieSetter = async (data) => {
+    try {
+
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 7);
+
+      Cookies.set(`nexo-data-1`, data.access_token, { expires: expirationDate });
+
+      Cookies.set(`nexo-data-2`, data.refresh_token, { expires: expirationDate });
+
+
+      setAuth(true);
+
+      return true;
+    } catch (error) {
+      // Handle errors, if any
+      console.log(error);
+    }
+  }
 
   return (
     <div className="w-screen font-sans h-screen bg-[#FFC977] flex justify-center items-center">
@@ -140,7 +162,7 @@ function page() {
 
           {/* Create Organization */}
           {join === 1 ? (
-            <div className="flex flex-col justify-between h-[90%]">
+            <div className="flex flex-col justify-between h-[100%]">
               <div className="h-[50px]  w-[350px] flex justify-between">
                 <div className="text-black text-[20px] font-semibold">
                   Enter your organization's details
@@ -157,7 +179,7 @@ function page() {
                 </div> */}
               </div>
 
-              <div className=" h-[340px] flex flex-col justify-evenly">
+              <div className=" h-[440px] flex flex-col justify-evenly">
                 {/* Enter industry */}
                 <div>
                   <div className="text-[14px] font-sans font-semibold text-black">
@@ -179,9 +201,9 @@ function page() {
                     Location
                   </div>
                   <input
-                    value={org}
+                    value={location}
                     onChange={(e) => {
-                      setOrg(e.target.value);
+                      setLocation(e.target.value)
                     }}
                     placeholder="Organization name"
                     className=" my-2 text-[#808080] text-[12px] px-2 flex justify-center items-center border-2 outline-none rounded-lg h-[40px] w-[350px]"
@@ -194,9 +216,9 @@ function page() {
                     Type
                   </div>
                   <input
-                    value={org}
+                    value={type}
                     onChange={(e) => {
-                      setOrg(e.target.value);
+                      setType(e.target.value);
                     }}
                     placeholder="Organization name"
                     className=" my-2 text-[#808080] text-[12px] px-2 flex justify-center items-center border-2 outline-none rounded-lg h-[40px] w-[350px]"
@@ -209,9 +231,9 @@ function page() {
                     Number of members
                   </div>
                   <input
-                    value={org}
+                    value={members}
                     onChange={(e) => {
-                      setOrg(e.target.value);
+                      setMembers(e.target.value);
                     }}
                     placeholder="Organization name"
                     className=" my-2 text-[#808080] text-[12px] px-2 flex justify-center items-center border-2 outline-none rounded-lg h-[40px] w-[350px]"

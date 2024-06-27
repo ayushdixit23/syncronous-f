@@ -22,12 +22,11 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { receiverData } from "@/lib/receiverSlice";
 import { useAppDispatch } from "@/lib/hooks";
+import { useAuthContext } from "@/utils/auth";
 
 function page() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [data, setData] = useState([]);
-  const [allorganizations, setAllorganizations] = useState([]);
   const [createteam, setCreateteam] = useState(false);
   const [teamname, setTeamname] = useState("");
   const [email, setEmail] = useState("");
@@ -35,10 +34,7 @@ function page() {
   const [convId, setConvId] = useState("");
   const [team, setTeam] = useState([]);
   const [userdata, setUserdata] = useState([]);
-  const [receiver_id, setReceiver_id] = useState();
-  const cookie = Cookies.get("she2202");
-  const cook = decryptaes(cookie);
-  const d = JSON.parse(cook);
+  const { data } = useAuthContext()
 
   // const func = async () => {
   //   try {
@@ -64,7 +60,7 @@ function page() {
   // Fetching users data
   // const id = useSelector((state) => state.user.id);
   // console.log(id);
-  const organization = d.organization;
+  const organization = data.organization?.[0];
   const userfunc = async () => {
     try {
       const response = await axios.get("http://localhost:3500/api/get/alldata");
@@ -90,7 +86,7 @@ function page() {
       if (receiverid) {
         const rid = receiverid._id;
         const rusername = receiverid.username;
-        const idArray = [d._id, rid];
+        const idArray = [data?.id, rid];
         idArray.sort();
         const convId = idArray.join("_");
         // const convId = `${d._id}_${rid}`;

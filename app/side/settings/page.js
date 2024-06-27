@@ -1,33 +1,32 @@
 "use client";
 import { decryptaes } from "@/app/security";
+import { useAuthContext } from "@/utils/auth";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 
 function page() {
-  const cookie = Cookies.get("she2202");
-  const cook = decryptaes(cookie);
-  const d = JSON.parse(cook);
-  const [name, setName] = useState("");
-  const userdata = async () => {
-    try {
-      const response = await axios.get("http://localhost:3500/api/get/alldata");
-      const data = response.data;
-      console.log(data);
-      const userid = data.find((e) => e._id === d._id);
-      if (userid) {
-        setName(userid.username);
-      } else {
-        console.log("Not getting user");
-      }
-    } catch (e) {
-      console.error("No User found", e.message);
-    }
-  };
-  useEffect(() => {
-    userdata();
-  }, []);
+  const router = useRouter()
+  const { setAuth, data, setData } = useAuthContext()
+
+  const handleLogOut = () => {
+    Cookies.remove(`nexo-data-1`)
+    Cookies.remove(`nexo-data-2`)
+    setAuth(false)
+    setTimeout(() => {
+      setData("")
+    }, 5000)
+
+    // localStorage.removeItem(`axetkn`)
+    // localStorage.removeItem(`rvktkn`)
+
+    router.push("/")
+  }
+
+  console.log(data, "dat")
+
   return (
     <div className="h-full w-full sm:pt-1 sm:px-4">
       <div className="w-full py-4 rounded-2xl pn:max-sm:hidden font-semibold text-[18px] bg-white px-4">
@@ -37,11 +36,13 @@ function page() {
         {/* web-left */}
         <div className="h-full sm:w-[25%] w-[100%] bg-white sm:rounded-2xl p-2">
           <div className="w-full bg-[#f9f9f9] h-[100px] sm:h-[200px] rounded-2xl sm:flex-col flex items-center sm:justify-center px-2 space-x-2">
-            <div className="h-[65px] w-[65px] bg-[#fff] rounded-full"></div>
+            <div className="h-[65px] w-[65px] rounded-full">
+              <img src={data?.dp} />
+            </div>
             <div>
               <div className="font-semibold text-[18px]">Name</div>
               <div className="font-medium text-[14px] text-[#4b4b4b]">
-                @Username
+                @{data?.name}
               </div>
             </div>
           </div>
@@ -83,7 +84,7 @@ function page() {
             </div>
           </div>
           <div className="flex justify-between px-2 h-[50px] items-center hover:bg-[#fafafa] ">
-            <div className="font-medium text-[#3e3e3e]">Log out</div>
+            <div onClick={handleLogOut} className="font-medium text-[#3e3e3e]">Log out</div>
             <div className="text-[#7e7e7e]">
               <IoIosArrowForward />
             </div>

@@ -11,15 +11,38 @@ import Cookies from "js-cookie";
 import { userData } from "@/lib/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { API } from "@/utils/Essentials";
+import { useAuthContext } from "@/utils/auth";
 // import firebase from "../../../firebase";
 
 // // Define the functional component
 function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [email, setEmail] = useState(""); // State for email input
-  const [password, setPassword] = useState(""); // State for password input
-  const [organization, setOrganization] = useState("");
+  const { setAuth } = useAuthContext()
+  const [email, setEmail] = useState("fsayush100@gmail.com"); // State for email input
+  const [password, setPassword] = useState("12345678"); // State for password input
+  const [organization, setOrganization] = useState("Ayush's Organisation");
+
+  const cookieSetter = async (data) => {
+    try {
+
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 7);
+
+      Cookies.set(`nexo-data-1`, data.access_token, { expires: expirationDate });
+
+
+      Cookies.set(`nexo-data-2`, data.refresh_token, { expires: expirationDate });
+
+
+      setAuth(true);
+
+      return true;
+    } catch (error) {
+      // Handle errors, if any
+      console.log(error);
+    }
+  }
 
   const checklogin = async () => {
     try {
@@ -30,18 +53,17 @@ function LoginPage() {
       });
 
       if (response.data.success) {
-        const details = response.data.user;
-        const postdata = JSON.stringify(details);
-        const dis = encryptaes(postdata);
-        Cookies.set("she2202", dis);
+        // const details = response.data.user;
 
-        dispatch(
-          userData({
-            id: details._id,
-            organization: details.organization,
-            email: details.email,
-          })
-        );
+        await cookieSetter(response.data)
+
+        // dispatch(
+        //   userData({
+        //     id: details._id,
+        //     organization: details.organization,
+        //     email: details.email,
+        //   })
+        // );
 
         router.push("../side/todo");
       } else {

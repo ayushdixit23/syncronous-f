@@ -17,19 +17,21 @@ import { FaListUl } from "react-icons/fa";
 import { MdOutlineChatBubbleOutline } from "react-icons/md";
 import { RiGroupLine } from "react-icons/ri";
 import { RiSettings2Line } from "react-icons/ri";
+import { useAuthContext } from "@/utils/auth";
 
 function Sidebar() {
   const [click, setClick] = useState(1);
-  const cookie = Cookies.get("she2202");
-  const cook = decryptaes(cookie);
-  const d = JSON.parse(cook);
+  // const cookie = Cookies.get("she2202");
+  // const cook = decryptaes(cookie);
+  // const d = JSON.parse(cook);
+  const { data } = useAuthContext()
   const [name, setName] = useState("");
   const userdata = async () => {
     try {
       const response = await axios.get("http://localhost:3500/api/get/alldata");
       const data = response.data;
 
-      const userid = data.find((e) => e._id === d._id);
+      const userid = data.find((e) => e._id === data?.id);
       if (userid) {
         setName(userid.username);
       } else {
@@ -54,7 +56,7 @@ function Sidebar() {
           </div>
           {/* name */}
           <div className="flex flex-col mx-2">
-            <div className="text-[14px] font-semibold">{name}</div>
+            <div className="text-[14px] font-semibold">{data?.name}</div>
             <div className="text-[12px] ">Admin</div>
           </div>
         </div>
@@ -66,9 +68,8 @@ function Sidebar() {
           onClick={() => {
             setClick(1);
           }}
-          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${
-            click === 1 ? " bg-[#FFC977] font-semibold " : ""
-          }`}
+          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${click === 1 ? " bg-[#FFC977] font-semibold " : ""
+            }`}
         >
           <MdOutlineTask className="h-6 w-6" />
           <div className="text-[#404040] font-semibold text-[14px] mx-2">
@@ -82,9 +83,8 @@ function Sidebar() {
           onClick={() => {
             setClick(2);
           }}
-          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${
-            click === 2 ? " bg-[#FFC977] font-semibold " : ""
-          }`}
+          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${click === 2 ? " bg-[#FFC977] font-semibold " : ""
+            }`}
         >
           <FaListUl className="h-5 w-5" />
           <div className="text-[#404040] font-semibold text-[14px] mx-2">
@@ -98,9 +98,8 @@ function Sidebar() {
           onClick={() => {
             setClick(3);
           }}
-          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${
-            click === 3 ? " bg-[#FFC977] font-semibold " : ""
-          }`}
+          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${click === 3 ? " bg-[#FFC977] font-semibold " : ""
+            }`}
         >
           <MdOutlineChatBubbleOutline className="h-5 w-5" />
           <div className="text-[#404040] font-semibold text-[14px] mx-2">
@@ -114,9 +113,8 @@ function Sidebar() {
           onClick={() => {
             setClick(4);
           }}
-          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl pl-2 px-2 ${
-            click === 4 ? " bg-[#FFC977] font-semibold " : ""
-          }`}
+          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl pl-2 px-2 ${click === 4 ? " bg-[#FFC977] font-semibold " : ""
+            }`}
         >
           <RiGroupLine className="h-6 w-6" />
           <div className="text-[#404040] font-semibold text-[14px] mx-2">
@@ -130,9 +128,8 @@ function Sidebar() {
           onClick={() => {
             setClick(5);
           }}
-          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${
-            click === 5 ? " bg-[#FFC977] font-semibold " : ""
-          }`}
+          className={`flex flex-row object-contain items-center h-[50px] w-[85%] rounded-xl px-2 ${click === 5 ? " bg-[#FFC977] font-semibold " : ""
+            }`}
         >
           {" "}
           <RiSettings2Line className="h-6 w-6" />

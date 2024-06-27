@@ -2,30 +2,29 @@
 import React, { useCallback, useEffect, useState } from "react";
 import pic from "../../assets/empty.png";
 import task from "../../assets/task.png";
-import redflag from "../../assets/redflag.png";
 import greenflag from "../../assets/greenflag.png";
-
 import Image from "next/image";
-import TaskModal from "../Compo/Addtask";
 import TeamModal from "../Compo/Addteamtask";
 import axios from "axios";
-import Cookies from "js-cookie";
-import { decryptaes } from "@/app/security";
 import { API } from "@/utils/Essentials";
 import moment from "moment";
+import { useAuthContext } from "@/utils/auth";
 
 function page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [teamtasks, setTeamtasks] = useState(false);
   const [done, setDone] = useState(1);
   const [tasks, setGetTasks] = useState([]);
-  const cookie = Cookies.get("she2202");
-  const cook = decryptaes(cookie);
-  const d = JSON.parse(cook);
+  // const cookie = Cookies.get("she2202");
+  // const cook = decryptaes(cookie);
+  // const d = JSON.parse(cook);
+  const { data } = useAuthContext()
 
   const openModal = () => {
     setIsModalOpen(true);
   };
+
+  console.log(data)
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -53,7 +52,7 @@ function page() {
 
   const getTasks = useCallback(async () => {
     try {
-      const res = await axios.post(`${API}/fetchalltasks`, { id: d?._id });
+      const res = await axios.post(`${API}/fetchalltasks`, { id: data?.id });
       setGetTasks(res.data);
     } catch (error) {
       console.log(error);
@@ -128,7 +127,7 @@ function page() {
                           alt="pic"
                           src={greenflag}
                           onClick={() => {
-                            handleImageClick({ taskid: task._id, id: d?._id });
+                            handleImageClick({ taskid: task._id, id: data?.id });
                           }}
                           className="h-[45px] w-[45px] object-contain"
                         />
